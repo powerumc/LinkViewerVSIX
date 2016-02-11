@@ -69,7 +69,7 @@ namespace LinkViewerVSIX
 			if (regex.IsMatch(text))
 			{
 				var match = regex.Match(text);
-				ShowImageAsync(match.Value);
+				ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
 			}
 			else
 			{
@@ -131,9 +131,11 @@ namespace LinkViewerVSIX
             }
         }
 
-        protected async void ShowImageAsync(string source)
+        protected async void ShowImageAsync(string source, Point point)
         {
 	        img = new Image {Source = await LoadImageSourceAsync(source)};
+			Canvas.SetTop(img, point.Y);
+			Canvas.SetLeft(img, point.X);
 	        layer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, img, null);
         }
 
