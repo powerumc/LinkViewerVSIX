@@ -60,68 +60,53 @@ namespace LinkViewerVSIX
 		private Regex regex = new Regex(@"(http|https)[-a-zA-Z0-9:_\+.~#?&//=]{2,256}\.[^@\ ][a-z]{2,12}\b(\/[-a-zA-Z0-9:%_\+.~#?&//=]*)?", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
 		private void VisualElementOnMouseMove(object sender, MouseEventArgs args)
 	    {
-			var position = args.GetPosition(view.VisualElement);
-            var lineY = view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y + view.ViewportTop);
-            if (lineY == null) return;
+			//var position = args.GetPosition(view.VisualElement);
+   //         var lineY = view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y + view.ViewportTop);
+   //         if (lineY == null) return;
 
-            var lineX = lineY.GetBufferPositionFromXCoordinate(position.X + view.ViewportLeft);
-            if (lineX == null) return;
+   //         var lineX = lineY.GetBufferPositionFromXCoordinate(position.X + view.ViewportLeft);
+   //         if (lineX == null) return;
 
-            Debug.WriteLine($"X:{position.X},	Y:{position.Y}");
-            if (!lineX.HasValue) return;
+   //         Debug.WriteLine($"X:{position.X},	Y:{position.Y}");
+   //         if (!lineX.HasValue) return;
 
-            for (var i=lineX.Value.Position; i>=0; i--)
-            {
-                var snapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, i + 1));
-                var c = snapshotSpan.GetText();
-                Debug.Write(c);
+   //         for (var i=lineX.Value.Position; i>=0; i--)
+   //         {
+   //             var snapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, i + 1));
+   //             var c = snapshotSpan.GetText();
+   //             Debug.Write(c);
 
                     
-                if (Regex.IsMatch(c, "[ \"\'<>\t]", RegexOptions.IgnoreCase|RegexOptions.Singleline))
-                {
+   //             if (Regex.IsMatch(c, "[ \"\'<>\t]", RegexOptions.IgnoreCase|RegexOptions.Singleline))
+   //             {
 
-                    var textSnapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, lineY.End.Position));
-                    Debug.WriteLine("   " + textSnapshotSpan.GetText());
-                    var text = textSnapshotSpan.GetText();
+   //                 var textSnapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, lineY.End.Position));
+   //                 Debug.WriteLine("   " + textSnapshotSpan.GetText());
+   //                 var text = textSnapshotSpan.GetText();
 
-                    if (regex.IsMatch(text))
-                    {
-                        var match = regex.Match(text);
+   //                 if (regex.IsMatch(text))
+   //                 {
+   //                     var match = regex.Match(text);
                         
-                        ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
-                    }
-                    else
-                    {
-                        layer.RemoveAllAdornments();
+   //                     ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
+   //                 }
+   //                 else
+   //                 {
+   //                     layer.RemoveAllAdornments();
                         
-                        if (this.window != null)
-                        {
-                            this.window.Close();
-                            this.window = null;
-                        }
-                    }
+   //                     if (this.window != null)
+   //                     {
+   //                         this.window.Close();
+   //                         this.window = null;
+   //                     }
+   //                 }
 
-                    break;
-                }
+   //                 break;
+   //             }
 
-            }
-            Debug.WriteLine("");
-
-
-   //         var text = lineY.Extent.GetText();
-   //         Debug.WriteLine(text);
-			//if (lineY == null) return;
-
-			//if (regex.IsMatch(text))
-			//{
-			//	var match = regex.Match(text);
-			//	ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
-			//}
-			//else
-			//{
-			//	layer.RemoveAllAdornments();
-			//}
-	    }
+   //         }
+   //         Debug.WriteLine("");
+   	    }
 
         internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
@@ -133,17 +118,13 @@ namespace LinkViewerVSIX
 
         private void CreateVisuals(ITextViewLine line)
         {
-            //var regex = new Regex(@"(http|https)[-a-zA-Z0-9:_\+.~#?&//=]{2,256}\.[^@\ ][a-z]{2,12}\b(\/[-a-zA-Z0-9:%_\+.~#?&//=]*)?", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            //var lineText = line.Extent.Snapshot.GetText(Span.FromBounds(line.Start, line.End));
-            //if (regex.IsMatch(lineText))
-            //{
-            //    var currentLine = view.GetTextViewLineContainingBufferPosition(view.Caret.Position.BufferPosition);
-            //    Trace.WriteLine(currentLine.Extent.GetText());
 
-            //    var match = regex.Match(currentLine.Extent.GetText());
-            //    ShowImageAsync(match.Value);
+            {
+                var text = line.Extent.GetText();
+                if (!regex.IsMatch(text)) return;
 
-            //}
+            }
+
 
             IWpfTextViewLineCollection textViewLines = this.view.TextViewLines;
 
