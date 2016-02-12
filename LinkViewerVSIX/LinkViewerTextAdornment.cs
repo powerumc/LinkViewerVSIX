@@ -59,22 +59,60 @@ namespace LinkViewerVSIX
 		private void VisualElementOnMouseMove(object sender, MouseEventArgs args)
 	    {
 			var position = args.GetPosition(view.VisualElement);
-			Trace.WriteLine($"X:{position.X}	Y:{position.Y}");
+            var lineY = view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y + view.ViewportTop);
+            if (lineY == null) return;
 
-		    var line = view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y + view.ViewportTop);
-			var text = line?.Extent.GetText();
-			Trace.WriteLine(text);
-			if (line == null) return;
+            var lineX = lineY.GetBufferPositionFromXCoordinate(position.X + view.ViewportLeft);
+            if (lineX == null) return;
 
-			if (regex.IsMatch(text))
-			{
-				var match = regex.Match(text);
-				ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
-			}
-			else
-			{
-				layer.RemoveAllAdornments();
-			}
+            Debug.WriteLine($"X:{position.X},	Y:{position.Y}");
+            if (!lineX.HasValue) return;
+
+            for (var i=lineX.Value.Position; i>=0; i--)
+            {
+                var snapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, i + 1));
+                var c = snapshotSpan.GetText();
+                Debug.Write(c);
+
+                    
+                if (Regex.IsMatch(c, "[ \"\'<>\t]", RegexOptions.IgnoreCase|RegexOptions.Singleline))
+                {
+
+                    var textSnapshotSpan = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(i, lineY.End.Position));
+                    Debug.WriteLine("   " + textSnapshotSpan.GetText());
+                    var text = textSnapshotSpan.GetText();
+
+                    if (regex.IsMatch(text))
+                    {
+                        var match = regex.Match(text);
+                        
+                        ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
+                    }
+                    else
+                    {
+                        layer.RemoveAllAdornments();
+                    }
+
+                    break;
+                }
+
+            }
+            Debug.WriteLine("");
+
+
+   //         var text = lineY.Extent.GetText();
+   //         Debug.WriteLine(text);
+			//if (lineY == null) return;
+
+			//if (regex.IsMatch(text))
+			//{
+			//	var match = regex.Match(text);
+			//	ShowImageAsync(match.Value, new Point(position.X + view.ViewportLeft, position.Y + view.ViewportTop));
+			//}
+			//else
+			//{
+			//	layer.RemoveAllAdornments();
+			//}
 	    }
 
         internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
