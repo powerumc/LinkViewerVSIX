@@ -31,6 +31,8 @@ namespace LinkViewerVSIX
         private readonly Brush brush;
         private readonly Pen pen;
 	    private Image img;
+        private Window window;
+
 		public LinkViewerTextAdornment(IWpfTextView view)
         {
             if (view == null)
@@ -91,6 +93,12 @@ namespace LinkViewerVSIX
                     else
                     {
                         layer.RemoveAllAdornments();
+                        
+                        if (this.window != null)
+                        {
+                            this.window.Close();
+                            this.window = null;
+                        }
                     }
 
                     break;
@@ -171,10 +179,25 @@ namespace LinkViewerVSIX
 
         protected async void ShowImageAsync(string source, Point point)
         {
-	        img = new Image {Source = await LoadImageSourceAsync(source)};
-			Canvas.SetTop(img, point.Y);
-			Canvas.SetLeft(img, point.X);
-	        layer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, img, null);
+            if (window != null) return;
+
+            img = new Image { Source = await LoadImageSourceAsync(source) };
+            //Canvas.SetTop(img, point.Y);
+            //Canvas.SetLeft(img, point.X);
+            //layer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, img, null);
+
+            lock (this.GetType())
+            {
+                window = new Window
+                {
+
+                    Content = img,
+                    Width = 300,
+                    Height = 300
+                }; 
+            }
+
+            window.Show();
         }
 
         private async Task<ImageSource> LoadImageSourceAsync(string address)
