@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LinkViewerLinkTag.cs" />
+    <Compile Include="LinkViewerLinkTagFormatDefinition.cs" />
+    <Compile Include="LinkViewerLinkTagger.cs" />
+    <Compile Include="LinkViewerLinkTaggerProvider.cs" />
     <Compile Include="LinkViewerTextAdornment.cs" />
     <Compile Include="LinkViewerTextAdornmentTextViewCreationListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
